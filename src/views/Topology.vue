@@ -1,7 +1,7 @@
 <template>
   <div class="topology">
     <!-- 左边图形库 -->
-    <div class="tools">
+    <div v-show="!preview" class="tools">
       <div v-for="(item, index) in Tools" :key="index">
         <div class="title">{{ item.group }}</div>
         <div class="buttons">
@@ -20,7 +20,7 @@
     <!-- 画布 -->
     <div id="topology-canvas" class="full" :class="TopologyData.grid?'canvas-container':''" @contextmenu="onContextMenu($event)"></div>
     <!-- 右边属性栏 -->
-    <div class="props">
+    <div v-show="!preview" class="props">
       <!-- 选中节点 -->
       <div v-if="props.node && !TopologyData.locked">
         <div class="title">样式</div>
@@ -128,7 +128,7 @@
           <a-col :span="24">
             <div class="bable">事件</div>
             <div class="bable-content">
-              <a-button   @click="onCreatePen(props.node.id)">添加单机击打开百度事件</a-button>
+              <a-button   @click="onCreatePen(props.node.id)">添加事件</a-button>
             </div>
           </a-col>
         </a-row>
@@ -313,7 +313,7 @@
         </a-row>
       </div>
       <!-- 选中画布 -->
-      <div v-if="!props.node && !props.line && !props.multi">
+      <div class="" v-if="!props.node && !props.line && !props.multi">
         <div class="title">图文设置</div>
         <div class="settings">
           <!-- <div class="item">
@@ -768,6 +768,7 @@ const canvasOptions = {}
 export default {
   data () {
     return {
+      preview: true,
       Tools, // 左侧图形库
       props: {
         node: null, // 节点
@@ -807,8 +808,16 @@ export default {
       window.topology = canvas
 
       // 渲染图形
-      // const json = {}
-      // canvas.open(json)
+      if (this.preview) {
+        try {
+          this.$axios.get('/node.json').then(res => {
+            console.log(res)
+            canvas.open(res.data)
+          })
+        } catch (error) {
+          console.log('$axios.get', error)
+        }
+      }
       // 如果json发送变化，重绘
       canvas.render()
     },
@@ -990,16 +999,17 @@ export default {
       canvas.updateProps(node)
     },
     onCreatePen (value) {
-      const testFunc = "window.alert('111111111111')"
+      const testFunc = `window.topology._emitter.emit('nodeChange', '${value}')`
       const testEvents = [
         {
-          name: 'dblclick',
+          name: 'click',
           type: EventType.Click,
           action: EventAction.Function, // 执行动作
           value: testFunc
         }
       ]
       canvas.setValue(value, testEvents, 'events')
+      window.alert('事件添加成功！')
     }
   }
 }

@@ -11,11 +11,13 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 // 颜色选择器
 import vcolorpicker from 'vcolorpicker'
+import axios from 'axios'
 
 Vue.use(Antd)
 Vue.use(vcolorpicker)
 
 Vue.config.productionTip = false
+Vue.prototype.$axios = axios
 
 new Vue({
   router,
