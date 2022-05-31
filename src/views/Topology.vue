@@ -806,13 +806,13 @@ export default {
       canvasOptions.on = this.onMessage
       canvas = new Topology('topology-canvas', canvasOptions)
       window.topology = canvas
-      const config = await this.$axios.get('/config.json')
+      const config = await this.$axios.get('./config.json')
       this.preview = config.data.preview
 
       // 渲染图形
       if (this.preview) {
         try {
-          this.$axios.get('/node.json').then(res => {
+          this.$axios.get('./node.json').then(res => {
             canvas.open(res.data)
           })
         } catch (error) {
