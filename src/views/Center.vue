@@ -17,7 +17,21 @@ export default {
   components: {
     Contact,
     Topology
+  },
+  mounted () {
+    window.addEventListener('message', this.handleMessageFromParent)
+  },
+  methods: {
+    handleMessageFromParent (event) {
+      var data = event.data
+      switch (data.cmd) {
+        case 'returnInfo':
+          console.log('来着爸爸的消息:', data.params.info)
+          break
+      }
+    }
   }
+
 }
 </script>
 

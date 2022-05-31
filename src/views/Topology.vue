@@ -800,18 +800,19 @@ export default {
     this.init()
   },
   methods: {
-    init () {
+    async init () {
       // 创建画布
       // 第一个参数'topo-canvas'表示canvas的dom元素id；第二个参数{}表示画布选项，这里表示全部使用默认值。
       canvasOptions.on = this.onMessage
       canvas = new Topology('topology-canvas', canvasOptions)
       window.topology = canvas
+      const config = await this.$axios.get('/config.json')
+      this.preview = config.data.preview
 
       // 渲染图形
       if (this.preview) {
         try {
           this.$axios.get('/node.json').then(res => {
-            console.log(res)
             canvas.open(res.data)
           })
         } catch (error) {
